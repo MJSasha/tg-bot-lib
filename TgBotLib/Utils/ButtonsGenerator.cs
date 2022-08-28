@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TgBotLib
+namespace TgBotLib.Utils
 {
     public class ButtonsGenerator
     {
