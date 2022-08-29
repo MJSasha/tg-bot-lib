@@ -5,16 +5,6 @@ namespace TgBotLib.Services
 {
     public static class LogService
     {
-        public static void LogStart()
-        {
-            Console.ResetColor();
-            Console.WriteLine($"{DateTime.Now} BOT START" +
-                $"\n-----------------------------------------------------" +
-                $"\nToken: {BaseBotSettings.BotToken}" +
-                $"\nBackEnd Root: {BaseBotSettings.BackRoot}" +
-                $"\n-----------------------------------------------------\n");
-        }
-
         public static void LogInfo(string info)
         {
             BaseLog(LogType.INFO, info);
@@ -24,18 +14,27 @@ namespace TgBotLib.Services
             BaseLog(LogType.ERROR, error);
         }
 
-
         public static void LogServerNotFound(string actionName)
         {
             LogError($"Server not found (404). {actionName} - Not completed");
         }
 
-        public static void LogMessages(object sender, MessageEventArgs e)
+        internal static void LogStart()
+        {
+            Console.ResetColor();
+            Console.WriteLine($"{DateTime.Now} BOT START" +
+                $"\n-----------------------------------------------------" +
+                $"\nToken: {BaseBotSettings.BotToken}" +
+                $"\nBackEnd Root: {BaseBotSettings.BackRoot}" +
+                $"\n-----------------------------------------------------\n");
+        }
+
+        internal static void LogMessages(object sender, MessageEventArgs e)
         {
             LogInfo($"ChatId: {e.Message.Chat.Id} | Message: {e.Message.Text}");
         }
 
-        public static void LogCallbacks(object sender, CallbackQueryEventArgs e)
+        internal static void LogCallbacks(object sender, CallbackQueryEventArgs e)
         {
             LogInfo($"ChatId: {e.CallbackQuery.Message.Chat.Id} | Callback: {e.CallbackQuery.Data}");
         }
