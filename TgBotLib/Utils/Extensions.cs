@@ -9,7 +9,6 @@ namespace TgBotLib.Utils
     {
         public static string GetName(this Enum enumItem)
         {
-            Type type = typeof(Enum);
             var attributes = typeof(Enum).GetCustomAttributes<EnumNameAttribute>();
 
             if (attributes.Any()) return attributes.First().Name;
