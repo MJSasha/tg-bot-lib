@@ -5,14 +5,9 @@ namespace TgBotLib.Services
 {
     public static class LogService
     {
-        public static void LogInfo(string info)
-        {
-            BaseLog(LogType.INFO, info);
-        }
-        public static void LogError(string error)
-        {
-            BaseLog(LogType.ERROR, error);
-        }
+        public static void LogInfo(string info) => BaseLog(LogType.INFO, info);
+        public static void LogWarn(string warn) => BaseLog(LogType.WARN, warn);
+        public static void LogError(string error) => BaseLog(LogType.ERROR, error);
 
         public static void LogServerNotFound(string actionName)
         {
@@ -21,12 +16,17 @@ namespace TgBotLib.Services
 
         internal static void LogStart()
         {
-            Console.ResetColor();
-            Console.WriteLine($"{DateTime.Now} BOT START" +
-                $"\n-----------------------------------------------------" +
-                $"\nToken: {BaseBotSettings.BotToken}" +
-                $"\nBackEnd Root: {BaseBotSettings.BackRoot}" +
-                $"\n-----------------------------------------------------\n");
+            Console.Write($"{DateTime.Now} ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("BOT START");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine("-----------------------------------------------------" +
+                $"\nToken: {BaseBotSettings.BotToken}");
+
+            try { Console.WriteLine($"BackEnd Root: {BaseBotSettings.BackRoot}"); } catch { /*don't send root*/}
+
+            Console.WriteLine("-----------------------------------------------------\n");
         }
 
         internal static void LogMessages(object sender, MessageEventArgs e)
@@ -51,6 +51,7 @@ namespace TgBotLib.Services
         private enum LogType
         {
             INFO,
+            WARN,
             ERROR
         }
 
@@ -59,6 +60,7 @@ namespace TgBotLib.Services
             return logType switch
             {
                 LogType.INFO => ConsoleColor.Green,
+                LogType.WARN => ConsoleColor.DarkYellow,
                 LogType.ERROR => ConsoleColor.Red,
                 _ => ConsoleColor.White
             };
