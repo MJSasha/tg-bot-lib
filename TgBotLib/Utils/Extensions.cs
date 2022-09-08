@@ -7,12 +7,9 @@ namespace TgBotLib.Utils
 {
     public static class Extensions
     {
-        public static string GetName(this Enum enumItem)
-        {
-            var attributes = typeof(Enum).GetCustomAttributes<EnumNameAttribute>();
-
-            if (attributes.Any()) return attributes.First().Name;
-            return enumItem.ToString();
-        }
+        public static string GetName(this Enum enumValue) => enumValue.GetType()
+            .GetMember(enumValue.ToString())
+            .First()
+            .GetCustomAttribute<EnumNameAttribute>().Name;
     }
 }
