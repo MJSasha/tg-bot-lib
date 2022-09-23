@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgBotLib.Interfaces;
 
 namespace TgBotLib.Handlers
@@ -25,7 +26,7 @@ namespace TgBotLib.Handlers
 
         protected abstract void RegistrateProcessing();
 
-        protected void AddProcessing(string message, Action action, Action completeAction = null)
+        protected void AddProcessing(string message, Action action, Action completeAction = null, IReplyMarkup button = null)
         {
             сancellationToken = new();
             currentTask = new Task(() =>
@@ -33,7 +34,7 @@ namespace TgBotLib.Handlers
                 action?.Invoke();
                 сancellationToken.Cancel();
             });
-            bot.SendMessage(message);
+            bot.SendMessage(message, button);
             currentTask.Wait();
 
             completeAction?.Invoke();
