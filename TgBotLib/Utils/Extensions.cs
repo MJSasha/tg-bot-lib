@@ -7,9 +7,9 @@ namespace TgBotLib.Utils
 {
     public static class Extensions
     {
-        public static string GetName(this Enum enumValue) => enumValue.GetType()
-            .GetMember(enumValue.ToString())
-            .First()
-            .GetCustomAttribute<EnumNameAttribute>().Name;
+        public static string GetName(this Enum enumValue) => enumValue.GetType()?
+            .GetMember(enumValue.ToString())?
+            .First()?
+            .GetCustomAttribute<EnumNameAttribute>()?.Name ?? enumValue.ToString();
     }
 }
