@@ -11,5 +11,8 @@ namespace TgBotLib.Utils
             .GetMember(enumValue.ToString())?
             .First()?
             .GetCustomAttribute<EnumNameAttribute>()?.Name ?? enumValue.ToString();
+        
+        public static string GetRoot(this Type type) => type?
+            .GetCustomAttribute<EntityRootAttribute>()?.Root ?? nameof(type);
     }
 }

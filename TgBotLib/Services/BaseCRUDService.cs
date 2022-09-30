@@ -4,12 +4,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using TgBotLib.Exceptions;
+using TgBotLib.Utils;
 
 namespace TgBotLib.Services
 {
-    public class BaseCRUDService<TEntity, TKey> : BaseService
+    public class BaseCRUDService<TEntity, TKey> : BaseService where TEntity : class
     {
-        public BaseCRUDService(string entityRoot) : base(entityRoot) { }
+        public BaseCRUDService(string entityRoot = null) : base(entityRoot ?? typeof(TEntity).GetRoot()) { }
 
         public virtual async Task<TEntity> Get(TKey key)
         {
