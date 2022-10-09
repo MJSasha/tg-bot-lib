@@ -43,7 +43,7 @@ namespace TgBotLib.Services
         public virtual async Task Update(TKey key, TEntity item)
         {
             TEntity entity = await Get(key);
-            if (entity == null) throw new ErrorResponseException(HttpStatusCode.NotFound);
+            if (entity == null) throw new ErrorResponseException(HttpStatusCode.NotFound, "Entity not found");
 
             var json = new StringContent(Serialize(item), Encoding.UTF8, "application/json");
 
