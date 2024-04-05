@@ -8,6 +8,7 @@ internal static class UpdateHandlingHelper
 {
     internal static async Task HandleMessage(IEnumerable<BotController> controllers, string messageText)
     {
+        if (string.IsNullOrEmpty(messageText)) return;
         foreach (var controller in controllers)
         {
             var methods = controller.GetMethodsInfo();

@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
 using TgBotLib.Core.Services;
 
@@ -64,11 +65,20 @@ internal class TelegramBotService : IHostedService
             return;
         }
 
-        var messageText = update.GetMessageText();
-        if (!string.IsNullOrEmpty(messageText))
+        if (update.Message != null)
         {
-            await UpdateHandlingHelper.HandleMessage(controllers, messageText);
+            await HandleMessage(update, controllers);
         }
+    }
+
+    private Task HandleMessage(Update update, IEnumerable<BotController> controllers)
+    {
+        return update.Message!.Type switch
+        {
+            MessageType.Text => UpdateHandlingHelper.HandleMessage(controllers, update.GetMessageText()),
+            // TODO: add default handler
+            _ => Task.CompletedTask
+        };
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
