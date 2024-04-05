@@ -15,11 +15,27 @@ builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
 ```csharp
 public class TestController : BotController
 {
+    private readonly IButtonsGenerationService _buttonsGenerationService;
+
+    public TestController(IButtonsGenerationService buttonsGenerationService)
+    {
+        _buttonsGenerationService = buttonsGenerationService;
+    }
+
     [Message("Test")]
     [Message("Second test")]
     public async Task Test()
     {
         await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
+    }
+    
+    [Message("Buttons")]
+    public async Task TestWithButtons()
+    {
+        _buttonsGenerationService.SetInlineButtons("1", "2", "3");
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), 
+            "Test message",
+            replyMarkup: _buttonsGenerationService.GetButtons());
     }
 }
 ```

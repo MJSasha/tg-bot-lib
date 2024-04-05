@@ -19,6 +19,7 @@ public static class ServicesProvider
             .AddSingleton(botSettings)
             .AddSingleton<IUsersActionsService, UsersActionsService>()
             .AddSingleton<IHostedService, TelegramBotService>()
+            .AddTransient<IButtonsGenerationService, ButtonsGenerationService>()
             .AddControllers()
             ;
 
