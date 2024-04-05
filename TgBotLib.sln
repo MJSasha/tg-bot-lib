@@ -5,6 +5,15 @@ VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgBotLib", "TgBotLib\TgBotLib.csproj", "{E973ACA4-D32D-47DC-9B5C-D3C8CEB7B9A5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{797F21DE-EF50-40B6-B006-86B9EDF1A6C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgBotLib.Core", "src\TgBotLib.Core\TgBotLib.Core.csproj", "{EC115475-F500-4E62-9877-4B5AB1C76B58}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{19525411-A88F-42BD-9C05-087E14220A56}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,11 +24,18 @@ Global
 		{E973ACA4-D32D-47DC-9B5C-D3C8CEB7B9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E973ACA4-D32D-47DC-9B5C-D3C8CEB7B9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E973ACA4-D32D-47DC-9B5C-D3C8CEB7B9A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC115475-F500-4E62-9877-4B5AB1C76B58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC115475-F500-4E62-9877-4B5AB1C76B58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC115475-F500-4E62-9877-4B5AB1C76B58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC115475-F500-4E62-9877-4B5AB1C76B58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F09B93BC-E9E3-45FC-B5B7-9E09E51219B4}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC115475-F500-4E62-9877-4B5AB1C76B58} = {797F21DE-EF50-40B6-B006-86B9EDF1A6C4}
 	EndGlobalSection
 EndGlobal
