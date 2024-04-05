@@ -17,6 +17,7 @@ public static class ServicesProvider
             .AddSingleton(botExecutionContext)
             .AddSingleton(sp => new BotControllerFactory(sp, botExecutionContext))
             .AddSingleton(botSettings)
+            .AddSingleton<IUsersActionsService, UsersActionsService>()
             .AddSingleton<IHostedService, TelegramBotService>()
             .AddControllers()
             ;

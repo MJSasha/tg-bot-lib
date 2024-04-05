@@ -8,23 +8,57 @@
 builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
 ```
 
-Далее, по аналогии, можно добавить контроллеры:
+Далее, по аналогии, можно добавить контроллеры
+
+Пример стандартного контроллера:
 
 ```csharp
-using Telegram.Bot;
-using TgBotLib.Core;
-using TgBotLib.Core.Base;
-
-namespace WebApplication2.BotControllers;
-
 public class TestController : BotController
 {
     [Message("Test")]
     [Message("Second test")]
     public async Task Test()
     {
-        var client = BotContext.BotClient;
-        await client.SendTextMessageAsync(BotContext.Update.Message.Chat.Id, "Test message");
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
+    }
+}
+```
+
+Пример контроллера с обработкой последовательности:
+
+```csharp
+public class SecondTestController : BotController
+{
+    private readonly IUsersActionsService _usersActionsService;
+
+    public SecondTestController(IUsersActionsService usersActionsService)
+    {
+        _usersActionsService = usersActionsService;
+    }
+
+    [Message("Init handling")]
+    public async Task InitHandling()
+    {
+        _usersActionsService.HandleUser(BotContext.Update.GetChatId(), nameof(SecondTestController));
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Handling inited");
+    }
+
+    [ActionStep(nameof(SecondTestController), 0)]
+    public async Task FirstStep()
+    {
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"First step {BotContext.Update.GetMessageText()}");
+    }
+
+    [ActionStep(nameof(SecondTestController), 1)]
+    public async Task SecondStep()
+    {
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Second step {BotContext.Update.GetMessageText()}");
+    }
+
+    [ActionStep(nameof(SecondTestController), 2)]
+    public async Task ThirdStep()
+    {
+        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Third step {BotContext.Update.GetMessageText()}");
     }
 }
 ```

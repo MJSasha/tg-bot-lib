@@ -11,13 +11,15 @@ namespace TgBotLib.Core;
 internal class TelegramBotService : IHostedService
 {
     private readonly BotControllerFactory _botControllerFactory;
-    private readonly TelegramBotClient _botClient;
     private readonly BotExecutionContext _botExecutionContext;
+    private readonly IUsersActionsService _usersActionsService;
+    private readonly TelegramBotClient _botClient;
 
-    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, BotExecutionContext botExecutionContext)
+    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, BotExecutionContext botExecutionContext, IUsersActionsService usersActionsService)
     {
         _botControllerFactory = botControllerFactory;
         _botExecutionContext = botExecutionContext;
+        _usersActionsService = usersActionsService;
         _botClient = new TelegramBotClient(botSettings.BotToken);
     }
 
@@ -51,6 +53,16 @@ internal class TelegramBotService : IHostedService
     {
         _botExecutionContext.SetBotClient(botClient).SetUpdate(update);
         var controllers = _botControllerFactory.GetControllers();
+
+        var userActionInfo = _usersActionsService.GetUserActionStepInfo(update.GetChatId());
+
+        if (userActionInfo != null)
+        {
+            var actionsCompleted = await UpdateHandlingHelper.HandleUserAction(controllers, userActionInfo);
+            if (actionsCompleted) _usersActionsService.RemoveUser(update.GetChatId());
+            else _usersActionsService.IncrementStep(update.GetChatId());
+            return;
+        }
 
         var messageText = update.GetMessageText();
         if (!string.IsNullOrEmpty(messageText))
