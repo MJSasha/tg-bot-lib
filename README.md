@@ -1,4 +1,4 @@
-# **<p align="center">Telegrem bot lib</p>**
+# Telegram bot lib
 
 ## Пример
 
@@ -41,7 +41,7 @@ public class TestController : BotController
     {
         _buttonsGenerationService.SetInlineButtons("Test", "2", "3");
         return Client.SendTextMessageAsync(BotContext.Update.GetChatId(),
-            "Test message",
+            "Test buttons",
             replyMarkup: _buttonsGenerationService.GetButtons());
     }
 
