@@ -69,13 +69,22 @@ internal class TelegramBotService : IHostedService
         {
             await HandleMessage(update, controllers);
         }
+        else if (update.CallbackQuery != null)
+        {
+            await HandleCallbackQuery(update, controllers);
+        }
+    }
+
+    private Task HandleCallbackQuery(Update update, IEnumerable<BotController> controllers)
+    {
+        return UpdateHandlingHelper.HandleUpdate<CallbackAttribute>(controllers, update.GetCallbackMessage());
     }
 
     private Task HandleMessage(Update update, IEnumerable<BotController> controllers)
     {
         return update.Message!.Type switch
         {
-            MessageType.Text => UpdateHandlingHelper.HandleMessage(controllers, update.GetMessageText()),
+            MessageType.Text => UpdateHandlingHelper.HandleUpdate<MessageAttribute>(controllers, update.GetMessageText()),
             // TODO: add default handler
             _ => Task.CompletedTask
         };

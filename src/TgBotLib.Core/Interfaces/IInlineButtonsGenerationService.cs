@@ -2,7 +2,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgBotLib.Core;
 
-public interface IButtonsGenerationService
+public interface IInlineButtonsGenerationService
 {
     IReplyMarkup GetButtons();
     void SetInlineButtons(params string[] markup);

@@ -15,27 +15,40 @@ builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
 ```csharp
 public class TestController : BotController
 {
-    private readonly IButtonsGenerationService _buttonsGenerationService;
+    private readonly IInlineButtonsGenerationService _buttonsGenerationService;
 
-    public TestController(IButtonsGenerationService buttonsGenerationService)
+    public TestController(IInlineButtonsGenerationService buttonsGenerationService)
     {
         _buttonsGenerationService = buttonsGenerationService;
     }
 
     [Message("Test")]
-    [Message("Second test")]
-    public async Task Test()
+    [Message(@"Test\d", isPattern: true)]
+    public Task TestMessage()
     {
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
+        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
     }
-    
-    [Message("Buttons")]
-    public async Task TestWithButtons()
+
+    [Callback(@"Test")]
+    [Callback(@"\d", isPattern: true)]
+    public Task TestCallback()
     {
-        _buttonsGenerationService.SetInlineButtons("1", "2", "3");
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), 
+        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test callback");
+    }
+
+    [Message("Buttons")]
+    public Task TestWithButtons()
+    {
+        _buttonsGenerationService.SetInlineButtons("Test", "2", "3");
+        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(),
             "Test message",
             replyMarkup: _buttonsGenerationService.GetButtons());
+    }
+
+    [UnknownMessage]
+    public Task TestUnknownMessage()
+    {
+        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Hmm... 🤔");
     }
 }
 ```
