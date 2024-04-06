@@ -17,27 +17,13 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.x
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-
-      - name: Bump version and push tag
-        id: bump_version
-        uses: anothrNick/github-tag-action@1.27.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          push_changes: true
-          message: 'Bump version to v${{ steps.get_version.outputs.version }}'
-          prefix: v
-
-      - name: Get version
-        id: get_version
-        run: echo "::set-output name=version::$(dotnet version /p:VersionSuffix= --short)"
+      - name: Update version
+        run: |
+          dotnet gitversion /updateassemblyinfo
+          dotnet build --configuration Release --no-restore
 
       - name: Pack
         run: dotnet pack --configuration Release --no-build --output ./artifacts
