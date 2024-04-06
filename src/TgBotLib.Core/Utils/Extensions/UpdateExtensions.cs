@@ -10,5 +10,7 @@ public static class UpdateExtensions
 
     public static long GetCallbackChatId(this Update update) => update?.CallbackQuery?.Message?.Chat?.Id ?? 0;
 
-    public static long GetChatId(this Update update) => update?.Message?.Chat.Id ?? 0;
+    public static long GetChatId(this Update update) => update?.Message?.Chat.Id
+                                                        ?? update?.CallbackQuery?.Message?.Chat?.Id
+                                                        ?? 0;
 }

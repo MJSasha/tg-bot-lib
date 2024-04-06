@@ -7,21 +7,25 @@ namespace TgBotLib.Core;
 
 internal static class UpdateHandlingHelper
 {
-    internal static async Task HandleMessage(IEnumerable<BotController> controllers, string messageText)
+    internal static async Task HandleUpdate<T>(IEnumerable<BotController> controllers, string messageText) where T : BaseAttribute
     {
+        var messageHandledBySpecialMethod = false;
         if (string.IsNullOrEmpty(messageText)) return;
         foreach (var controller in controllers)
         {
             var methods = controller.GetMethodsInfo();
             foreach (var method in methods)
             {
-                var attributes = method.GetCustomAttributes<MessageAttribute>();
+                var attributes = method.GetCustomAttributes<T>();
                 if (CheckMessageForAttribute(attributes, messageText))
                 {
                     await (Task)method.Invoke(controller, null)!;
+                    messageHandledBySpecialMethod = true;
                 }
             }
         }
+
+        if (!messageHandledBySpecialMethod) await HandleUnknown<UnknownMessageAttribute>(controllers);
     }
 
     public static async Task<bool> HandleUserAction(IEnumerable<BotController> controllers, UserActionStepInfo userActionInfo)
@@ -50,16 +54,15 @@ internal static class UpdateHandlingHelper
         return actionsCompleted;
     }
 
-    public static async Task HandleCallbackQuery(IEnumerable<BotController> controllers, string getQueryMessage)
+    private static async Task HandleUnknown<T>(IEnumerable<BotController> controllers) where T : Attribute
     {
-        if (string.IsNullOrEmpty(getQueryMessage)) return;
         foreach (var controller in controllers)
         {
             var methods = controller.GetMethodsInfo();
             foreach (var method in methods)
             {
-                var attributes = method.GetCustomAttributes<CallbackAttribute>();
-                if (CheckMessageForAttribute(attributes, getQueryMessage))
+                var attribute = method.GetCustomAttribute<T>();
+                if (attribute != null)
                 {
                     await (Task)method.Invoke(controller, null)!;
                 }
