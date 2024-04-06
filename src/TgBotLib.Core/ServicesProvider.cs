@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
 using TgBotLib.Core.Services;
@@ -18,8 +17,8 @@ public static class ServicesProvider
             .AddSingleton(sp => new BotControllerFactory(sp, botExecutionContext))
             .AddSingleton(botSettings)
             .AddSingleton<IUsersActionsService, UsersActionsService>()
-            .AddSingleton<IHostedService, TelegramBotService>()
-            .AddTransient<IButtonsGenerationService, ButtonsGenerationService>()
+            .AddTransient<IInlineButtonsGenerationService, InlineButtonsGenerationService>()
+            .AddHostedService<TelegramBotService>()
             .AddControllers()
             ;
 

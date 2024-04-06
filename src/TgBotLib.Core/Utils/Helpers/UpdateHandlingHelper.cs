@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
 
@@ -15,7 +16,7 @@ internal static class UpdateHandlingHelper
             foreach (var method in methods)
             {
                 var attributes = method.GetCustomAttributes<MessageAttribute>();
-                if (attributes.Any(a => a.Message.Equals(messageText)))
+                if (CheckMessageForAttribute(attributes, messageText))
                 {
                     await (Task)method.Invoke(controller, null)!;
                 }
@@ -49,8 +50,32 @@ internal static class UpdateHandlingHelper
         return actionsCompleted;
     }
 
+    public static async Task HandleCallbackQuery(IEnumerable<BotController> controllers, string getQueryMessage)
+    {
+        if (string.IsNullOrEmpty(getQueryMessage)) return;
+        foreach (var controller in controllers)
+        {
+            var methods = controller.GetMethodsInfo();
+            foreach (var method in methods)
+            {
+                var attributes = method.GetCustomAttributes<CallbackAttribute>();
+                if (CheckMessageForAttribute(attributes, getQueryMessage))
+                {
+                    await (Task)method.Invoke(controller, null)!;
+                }
+            }
+        }
+    }
+
+    private static bool CheckMessageForAttribute(IEnumerable<BaseAttribute> attributes, string messageText)
+    {
+        return attributes.Any(a => a.IsPattern
+            ? Regex.IsMatch(messageText, a.Message)
+            : messageText.Equals(a.Message));
+    }
+
     private static IEnumerable<MethodInfo> GetMethodsInfo(this BotController controller)
     {
-        return controller.GetType().GetMethods().Where(m => m.GetParameters().Length == 0);
+        return controller.GetType().GetMethods().Where(m => m.GetParameters().Length == 0 && m.IsPublic);
     }
 }

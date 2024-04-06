@@ -69,6 +69,15 @@ internal class TelegramBotService : IHostedService
         {
             await HandleMessage(update, controllers);
         }
+        else if (update.CallbackQuery != null)
+        {
+            await HandleCallbackQuery(update, controllers);
+        }
+    }
+
+    private Task HandleCallbackQuery(Update update, IEnumerable<BotController> controllers)
+    {
+        return UpdateHandlingHelper.HandleCallbackQuery(controllers, update.GetCallbackMessage());
     }
 
     private Task HandleMessage(Update update, IEnumerable<BotController> controllers)

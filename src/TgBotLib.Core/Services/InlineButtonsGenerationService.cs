@@ -2,7 +2,7 @@
 
 namespace TgBotLib.Core.Services;
 
-internal class ButtonsGenerationService : IButtonsGenerationService
+internal class InlineButtonsGenerationService : IInlineButtonsGenerationService
 {
     private readonly List<List<InlineKeyboardButton>> _returnsButtons = [];
 
@@ -14,10 +14,10 @@ internal class ButtonsGenerationService : IButtonsGenerationService
     }
 
     public void SetInlineButtons(params string[] markup) => SetInlineButtons([markup]);
-    public void SetInlineButtons(params string[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(text => InlineKeyboardButton.WithCallbackData(text, "@" + text)).ToList());
+    public void SetInlineButtons(params string[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(text => InlineKeyboardButton.WithCallbackData(text, text)).ToList());
 
     public void SetInlineButtons(params (string name, string callback)[] markup) => SetInlineButtons([markup]);
-    public void SetInlineButtons(params (string name, string callback)[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithCallbackData(b.name, "@" + b.callback)).ToList());
+    public void SetInlineButtons(params (string name, string callback)[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithCallbackData(b.name, b.callback)).ToList());
 
     public void SetInlineUrlButtons(params (string name, string url)[] markup) => SetInlineUrlButtons([markup]);
     public void SetInlineUrlButtons(params (string name, string url)[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithUrl(b.name, b.url)).ToList());
