@@ -1,0 +1,46 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Bump version and push tag
+        id: bump_version
+        uses: anothrNick/github-tag-action@1.27.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          push_changes: true
+          message: 'Bump version to v${{ steps.get_version.outputs.version }}'
+          prefix: v
+
+      - name: Get version
+        id: get_version
+        run: echo "::set-output name=version::$(dotnet version /p:VersionSuffix= --short)"
+
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build --output ./artifacts
+
+      - name: Push NuGet package
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
