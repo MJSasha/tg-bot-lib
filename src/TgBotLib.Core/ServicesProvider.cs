@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TgBotLib.Core.Base;
-using TgBotLib.Core.Models;
 using TgBotLib.Core.Services;
 
 namespace TgBotLib.Core;
@@ -9,12 +8,10 @@ public static class ServicesProvider
 {
     public static IServiceCollection AddBotLibCore(this IServiceCollection services, string botToken)
     {
-        var botExecutionContext = new BotExecutionContext();
         var botSettings = new BotSettings { BotToken = botToken };
 
         services
-            .AddSingleton(botExecutionContext)
-            .AddSingleton(sp => new BotControllerFactory(sp, botExecutionContext))
+            .AddSingleton(sp => new BotControllerFactory(sp))
             .AddSingleton(botSettings)
             .AddSingleton<IUsersActionsService, UsersActionsService>()
             .AddTransient<IInlineButtonsGenerationService, InlineButtonsGenerationService>()

@@ -7,18 +7,16 @@ namespace TgBotLib.Core.Services;
 internal class BotControllerFactory
 {
     private readonly IServiceProvider _servicesProvider;
-    private readonly BotExecutionContext _botExecutionContext;
 
-    public BotControllerFactory(IServiceProvider servicesProvider, BotExecutionContext botExecutionContext)
+    public BotControllerFactory(IServiceProvider servicesProvider)
     {
         _servicesProvider = servicesProvider;
-        _botExecutionContext = botExecutionContext;
     }
 
-    internal IEnumerable<BotController> GetControllers()
+    internal IEnumerable<BotController> GetControllers(BotExecutionContext botExecutionContext)
     {
         var controllers = _servicesProvider.GetRequiredService<IEnumerable<BotController>>().ToList();
-        controllers.ForEach(c => c.BotContext = _botExecutionContext);
+        controllers.ForEach(c => c.BotContext = botExecutionContext);
         return controllers;
     }
 }
