@@ -54,7 +54,7 @@ internal static class UpdateHandlingHelper
         return actionsCompleted;
     }
 
-    private static async Task HandleUnknown<T>(IEnumerable<BotController> controllers) where T : Attribute
+    public static async Task HandleUnknown<T>(IEnumerable<BotController> controllers) where T : Attribute
     {
         foreach (var controller in controllers)
         {
