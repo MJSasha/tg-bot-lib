@@ -15,6 +15,7 @@ public static class ServicesProvider
             .AddSingleton(botSettings)
             .AddSingleton<IUsersActionsService, UsersActionsService>()
             .AddTransient<IInlineButtonsGenerationService, InlineButtonsGenerationService>()
+            .AddTransient<IKeyboardButtonsGenerationService, KeyboardButtonsGenerationService>()
             .AddHostedService<TelegramBotService>()
             .AddControllers()
             ;
