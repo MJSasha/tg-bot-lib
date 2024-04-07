@@ -63,14 +63,14 @@ internal class TelegramBotService : IHostedService
             return;
         }
 
-        if (update.Message != null)
+        await (update.Type switch
         {
-            await HandleMessage(update, controllers);
-        }
-        else if (update.CallbackQuery != null)
-        {
-            await HandleCallbackQuery(update, controllers);
-        }
+            UpdateType.Message => HandleMessage(update, controllers),
+            UpdateType.CallbackQuery => HandleCallbackQuery(update, controllers),
+            UpdateType.InlineQuery => UpdateHandlingHelper.HandleUnknown<InlineQueryAttribute>(controllers),
+            UpdateType.ChosenInlineResult => UpdateHandlingHelper.HandleUnknown<ChosenInlineResultAttribute>(controllers),
+            _ => UpdateHandlingHelper.HandleUnknown<UnknownUpdateAttribute>(controllers)
+        });
     }
 
     private Task HandleCallbackQuery(Update update, IEnumerable<BotController> controllers)

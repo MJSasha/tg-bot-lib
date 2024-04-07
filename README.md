@@ -17,6 +17,16 @@ public class TestController : BotController
 {
     private readonly IInlineButtonsGenerationService _buttonsGenerationService;
 
+    private readonly string[] _sites = ["Google", "Github", "Telegram", "Wikipedia"];
+
+    private readonly string[] _siteDescriptions =
+    [
+        "Google is a search engine",
+        "Github is a git repository hosting",
+        "Telegram is a messenger",
+        "Wikipedia is an open wiki"
+    ];
+
     public TestController(IInlineButtonsGenerationService buttonsGenerationService)
     {
         _buttonsGenerationService = buttonsGenerationService;
@@ -26,29 +36,50 @@ public class TestController : BotController
     [Message(@"Test\d", isPattern: true)]
     public Task TestMessage()
     {
-        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
+        return Client.SendTextMessageAsync(Update.GetChatId(), "Test message");
     }
 
     [Callback(@"Test")]
     [Callback(@"\d", isPattern: true)]
     public Task TestCallback()
     {
-        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test callback");
+        return Client.SendTextMessageAsync(Update.GetChatId(), "Test callback");
     }
 
     [Message("Buttons")]
     public Task TestWithButtons()
     {
         _buttonsGenerationService.SetInlineButtons("Test", "2", "3");
-        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(),
+        return Client.SendTextMessageAsync(Update.GetChatId(),
             "Test buttons",
             replyMarkup: _buttonsGenerationService.GetButtons());
+    }
+
+    [InlineQuery]
+    public Task TestInlineQuery()
+    {
+        var results = new List<InlineQueryResult>();
+
+        var counter = 0;
+        foreach (var site in _sites)
+        {
+            results.Add(new InlineQueryResultArticle($"{counter}", site, new InputTextMessageContent(_siteDescriptions[counter])));
+            counter++;
+        }
+
+        return Client.AnswerInlineQueryAsync(Update.InlineQuery.Id, results);
     }
 
     [UnknownMessage]
     public Task TestUnknownMessage()
     {
-        return Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Hmm... 🤔");
+        return Client.SendTextMessageAsync(Update.GetChatId(), "Hmm... 🤔");
+    }
+
+    [UnknownUpdate]
+    public Task TestUnknownUpdate()
+    {
+        return Client.SendTextMessageAsync(Update.GetChatId(), "HMM... 🤔");
     }
 }
 ```
