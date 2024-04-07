@@ -25,6 +25,7 @@
 public class TestController : BotController
 {
     private readonly IInlineButtonsGenerationService _buttonsGenerationService;
+    private readonly IKeyboardButtonsGenerationService _keyboardButtonsGenerationService;
 
     private readonly string[] _sites = ["Google", "Github", "Telegram", "Wikipedia"];
 
@@ -36,16 +37,20 @@ public class TestController : BotController
         "Wikipedia is an open wiki"
     ];
 
-    public TestController(IInlineButtonsGenerationService buttonsGenerationService)
+    public TestController(IInlineButtonsGenerationService buttonsGenerationService, IKeyboardButtonsGenerationService keyboardButtonsGenerationService)
     {
         _buttonsGenerationService = buttonsGenerationService;
+        _keyboardButtonsGenerationService = keyboardButtonsGenerationService;
     }
 
     [Message("Test")]
     [Message(@"Test\d", isPattern: true)]
     public Task TestMessage()
     {
-        return Client.SendTextMessageAsync(Update.GetChatId(), "Test message");
+        _keyboardButtonsGenerationService.SetKeyboardButtons("Test", "Test1", "Buttons");
+        return Client.SendTextMessageAsync(Update.GetChatId(),
+            "Test message",
+            replyMarkup: _keyboardButtonsGenerationService.GetButtons());
     }
 
     [Callback(@"Test")]

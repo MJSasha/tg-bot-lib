@@ -6,8 +6,6 @@ internal class InlineButtonsGenerationService : IInlineButtonsGenerationService
 {
     private readonly List<List<InlineKeyboardButton>> _returnsButtons = [];
 
-    public static IReplyMarkup GetKeyboardButtonWithPhoneRequest(string buttonText) => new ReplyKeyboardMarkup(KeyboardButton.WithRequestContact(buttonText));
-
     public IReplyMarkup GetButtons()
     {
         return new InlineKeyboardMarkup(_returnsButtons);
