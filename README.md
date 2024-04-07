@@ -1,12 +1,21 @@
 # Telegram bot lib
 
+![NuGet Version](https://img.shields.io/nuget/v/TgBotLib.Core)
+![GitHub License](https://img.shields.io/github/license/MJSasha/tg-bot-lib)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MJSasha/tg-bot-lib/main.yml)
+
+## Установка
+
+1. Установите nuget:
+    ```shell
+    dotnet add package TgBotLib.Core
+    ```
+2. В Program.cs добавить следующую строку:
+    ```csharp
+    builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
+    ```
+
 ## Пример
-
-В Program.cs добавить следующую строку:
-
-```csharp
-builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
-```
 
 Далее, по аналогии, можно добавить контроллеры
 
