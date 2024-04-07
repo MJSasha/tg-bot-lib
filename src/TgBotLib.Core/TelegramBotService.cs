@@ -83,14 +83,13 @@ internal class TelegramBotService : IHostedService
         return update.Message!.Type switch
         {
             MessageType.Text => UpdateHandlingHelper.HandleUpdate<MessageAttribute>(controllers, update.GetMessageText()),
-            // TODO: add default handler
-            _ => Task.CompletedTask
+            _ => UpdateHandlingHelper.HandleUnknown<UnknownMessageAttribute>(controllers)
         };
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // Handle polling error logic here
+        // TODO: Handle polling error logic here
         return Task.CompletedTask;
     }
 }
