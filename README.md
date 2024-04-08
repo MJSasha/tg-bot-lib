@@ -1,12 +1,12 @@
 # Telegram bot lib
 
-![NuGet Version](https://img.shields.io/nuget/v/TgBotLib.Core)
+[![NuGet Version](https://img.shields.io/nuget/v/TgBotLib.Core)](https://www.nuget.org/packages/TgBotLib.Core#readme-body-tab)
 ![GitHub License](https://img.shields.io/github/license/MJSasha/tg-bot-lib)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MJSasha/tg-bot-lib/main.yml)
 
 ## Установка
 
-1. Установите nuget:
+1. Установите [nuget](https://www.nuget.org/packages/TgBotLib.Core#readme-body-tab):
     ```shell
     dotnet add package TgBotLib.Core
     ```
@@ -53,14 +53,14 @@ public class TestController : BotController
             replyMarkup: _keyboardButtonsGenerationService.GetButtons());
     }
 
-    [Callback(@"Test")]
+    [Callback(nameof(TestCallback))]
     [Callback(@"\d", isPattern: true)]
     public Task TestCallback()
     {
         return Client.SendTextMessageAsync(Update.GetChatId(), "Test callback");
     }
 
-    [Message("Buttons")]
+    [Message("Buttons", ignoreCase: true)]
     public Task TestWithButtons()
     {
         _buttonsGenerationService.SetInlineButtons("Test", "2", "3");
@@ -75,7 +75,7 @@ public class TestController : BotController
         var results = new List<InlineQueryResult>();
 
         var counter = 0;
-        foreach (var site in _sites)
+        foreach (var site in _sites.Where(s => s.ToLower().Contains(Update.InlineQuery.Query.ToLower())))
         {
             results.Add(new InlineQueryResultArticle($"{counter}", site, new InputTextMessageContent(_siteDescriptions[counter])));
             counter++;

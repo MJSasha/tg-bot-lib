@@ -73,8 +73,8 @@ internal static class UpdateHandlingHelper
     private static bool CheckMessageForAttribute(IEnumerable<BaseAttribute> attributes, string messageText)
     {
         return attributes.Any(a => a.IsPattern
-            ? Regex.IsMatch(messageText, a.Message)
-            : messageText.Equals(a.Message));
+            ? Regex.IsMatch(a.IgnoreCase ? messageText.ToLower() : messageText, a.Message)
+            : a.Message.Equals(a.IgnoreCase ? messageText.ToLower() : messageText));
     }
 
     private static IEnumerable<MethodInfo> GetMethodsInfo(this BotController controller)
