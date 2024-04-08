@@ -28,7 +28,7 @@ internal static class UpdateHandlingHelper
         if (!messageHandledBySpecialMethod) await HandleUnknown<UnknownMessageAttribute>(controllers);
     }
 
-    public static async Task<bool> HandleUserAction(IEnumerable<BotController> controllers, UserActionStepInfo userActionInfo)
+    internal static async Task<bool> HandleUserAction(IEnumerable<BotController> controllers, UserActionStepInfo userActionInfo)
     {
         bool actionsCompleted = true;
         foreach (var controller in controllers)
@@ -54,7 +54,7 @@ internal static class UpdateHandlingHelper
         return actionsCompleted;
     }
 
-    public static async Task HandleUnknown<T>(IEnumerable<BotController> controllers) where T : Attribute
+    internal static async Task HandleUnknown<T>(IEnumerable<BotController> controllers) where T : Attribute
     {
         foreach (var controller in controllers)
         {
