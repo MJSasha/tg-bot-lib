@@ -43,7 +43,9 @@ public static class ServicesProvider
                         var arguments = new object[parameters.Length];
                         for (var i = 0; i < parameters.Length; i++)
                         {
-                            arguments[i] = serviceProvider.GetRequiredService(parameters[i].ParameterType);
+                            arguments[i] = serviceProvider.CreateScope()
+                                .ServiceProvider
+                                .GetRequiredService(parameters[i].ParameterType);
                         }
 
                         return (Activator.CreateInstance(controllerType, arguments) as BotController)!;
