@@ -1,14 +1,9 @@
 namespace TgBotLib.Core;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class MessageAttribute : Attribute
+public class MessageAttribute : BaseAttribute
 {
-    public string Message { get; set; }
-    public bool IsPattern { get; set; }
-
-    public MessageAttribute(string message, bool isPattern = false)
+    public MessageAttribute(string message, bool isPattern = false, bool ignoreCase = false) : base(message, isPattern, ignoreCase)
     {
-        Message = message;
-        IsPattern = isPattern;
     }
 }

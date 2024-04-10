@@ -1,12 +1,21 @@
-# **<p align="center">Telegrem bot lib</p>**
+# Telegram bot lib
+
+[![NuGet Version](https://img.shields.io/nuget/v/TgBotLib.Core)](https://www.nuget.org/packages/TgBotLib.Core#readme-body-tab)
+![GitHub License](https://img.shields.io/github/license/MJSasha/tg-bot-lib)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MJSasha/tg-bot-lib/main.yml)
+
+## Установка
+
+1. Установите [nuget](https://www.nuget.org/packages/TgBotLib.Core#readme-body-tab):
+    ```shell
+    dotnet add package TgBotLib.Core
+    ```
+2. В Program.cs добавить следующую строку:
+    ```csharp
+    builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
+    ```
 
 ## Пример
-
-В Program.cs добавить следующую строку:
-
-```csharp
-builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
-```
 
 Далее, по аналогии, можно добавить контроллеры
 
@@ -15,27 +24,76 @@ builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
 ```csharp
 public class TestController : BotController
 {
-    private readonly IButtonsGenerationService _buttonsGenerationService;
+    private readonly IInlineButtonsGenerationService _buttonsGenerationService;
+    private readonly IKeyboardButtonsGenerationService _keyboardButtonsGenerationService;
 
-    public TestController(IButtonsGenerationService buttonsGenerationService)
+    private readonly string[] _sites = ["Google", "Github", "Telegram", "Wikipedia"];
+
+    private readonly string[] _siteDescriptions =
+    [
+        "Google is a search engine",
+        "Github is a git repository hosting",
+        "Telegram is a messenger",
+        "Wikipedia is an open wiki"
+    ];
+
+    public TestController(IInlineButtonsGenerationService buttonsGenerationService, IKeyboardButtonsGenerationService keyboardButtonsGenerationService)
     {
         _buttonsGenerationService = buttonsGenerationService;
+        _keyboardButtonsGenerationService = keyboardButtonsGenerationService;
     }
 
     [Message("Test")]
-    [Message("Second test")]
-    public async Task Test()
+    [Message(@"Test\d", isPattern: true)]
+    public Task TestMessage()
     {
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), "Test message");
-    }
-    
-    [Message("Buttons")]
-    public async Task TestWithButtons()
-    {
-        _buttonsGenerationService.SetInlineButtons("1", "2", "3");
-        await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), 
+        _keyboardButtonsGenerationService.SetKeyboardButtons("Test", "Test1", "Buttons");
+        return Client.SendTextMessageAsync(Update.GetChatId(),
             "Test message",
+            replyMarkup: _keyboardButtonsGenerationService.GetButtons());
+    }
+
+    [Callback(nameof(TestCallback))]
+    [Callback(@"\d", isPattern: true)]
+    public Task TestCallback()
+    {
+        return Client.SendTextMessageAsync(Update.GetChatId(), "Test callback");
+    }
+
+    [Message("Buttons", ignoreCase: true)]
+    public Task TestWithButtons()
+    {
+        _buttonsGenerationService.SetInlineButtons("Test", "2", "3");
+        return Client.SendTextMessageAsync(Update.GetChatId(),
+            "Test buttons",
             replyMarkup: _buttonsGenerationService.GetButtons());
+    }
+
+    [InlineQuery]
+    public Task TestInlineQuery()
+    {
+        var results = new List<InlineQueryResult>();
+
+        var counter = 0;
+        foreach (var site in _sites.Where(s => s.ToLower().Contains(Update.InlineQuery.Query.ToLower())))
+        {
+            results.Add(new InlineQueryResultArticle($"{counter}", site, new InputTextMessageContent(_siteDescriptions[counter])));
+            counter++;
+        }
+
+        return Client.AnswerInlineQueryAsync(Update.InlineQuery.Id, results);
+    }
+
+    [UnknownMessage]
+    public Task TestUnknownMessage()
+    {
+        return Client.SendTextMessageAsync(Update.GetChatId(), "Hmm... 🤔");
+    }
+
+    [UnknownUpdate]
+    public Task TestUnknownUpdate()
+    {
+        return Client.SendTextMessageAsync(Update.GetChatId(), "HMM... 🤔");
     }
 }
 ```

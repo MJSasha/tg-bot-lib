@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
 using TgBotLib.Core.Services;
 
@@ -11,14 +12,12 @@ namespace TgBotLib.Core;
 internal class TelegramBotService : IHostedService
 {
     private readonly BotControllerFactory _botControllerFactory;
-    private readonly BotExecutionContext _botExecutionContext;
     private readonly IUsersActionsService _usersActionsService;
     private readonly TelegramBotClient _botClient;
 
-    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, BotExecutionContext botExecutionContext, IUsersActionsService usersActionsService)
+    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, IUsersActionsService usersActionsService)
     {
         _botControllerFactory = botControllerFactory;
-        _botExecutionContext = botExecutionContext;
         _usersActionsService = usersActionsService;
         _botClient = new TelegramBotClient(botSettings.BotToken);
     }
@@ -51,8 +50,8 @@ internal class TelegramBotService : IHostedService
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        _botExecutionContext.SetBotClient(botClient).SetUpdate(update);
-        var controllers = _botControllerFactory.GetControllers();
+        var botExecutionContext = new BotExecutionContext().SetBotClient(botClient).SetUpdate(update);
+        var controllers = _botControllerFactory.GetControllers(botExecutionContext);
 
         var userActionInfo = _usersActionsService.GetUserActionStepInfo(update.GetChatId());
 
@@ -64,16 +63,33 @@ internal class TelegramBotService : IHostedService
             return;
         }
 
-        var messageText = update.GetMessageText();
-        if (!string.IsNullOrEmpty(messageText))
+        await (update.Type switch
         {
-            await UpdateHandlingHelper.HandleMessage(controllers, messageText);
-        }
+            UpdateType.Message => HandleMessage(update, controllers),
+            UpdateType.CallbackQuery => HandleCallbackQuery(update, controllers),
+            UpdateType.InlineQuery => UpdateHandlingHelper.HandleUnknown<InlineQueryAttribute>(controllers),
+            UpdateType.ChosenInlineResult => UpdateHandlingHelper.HandleUnknown<ChosenInlineResultAttribute>(controllers),
+            _ => UpdateHandlingHelper.HandleUnknown<UnknownUpdateAttribute>(controllers)
+        });
+    }
+
+    private Task HandleCallbackQuery(Update update, IEnumerable<BotController> controllers)
+    {
+        return UpdateHandlingHelper.HandleUpdate<CallbackAttribute>(controllers, update.GetCallbackMessage());
+    }
+
+    private Task HandleMessage(Update update, IEnumerable<BotController> controllers)
+    {
+        return update.Message!.Type switch
+        {
+            MessageType.Text => UpdateHandlingHelper.HandleUpdate<MessageAttribute>(controllers, update.GetMessageText()),
+            _ => UpdateHandlingHelper.HandleUnknown<UnknownMessageAttribute>(controllers)
+        };
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // Handle polling error logic here
+        // TODO: Handle polling error logic here
         return Task.CompletedTask;
     }
 }
