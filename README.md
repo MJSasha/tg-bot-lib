@@ -15,7 +15,7 @@
    builder.Services.AddBotLibCore(options =>
    {
         options.BotToken = "2065215367:AAEKo4QKE7BmbH7JmUdL57YTPjj7YGeemzA";
-        options.ExceptionsHandler = new ExceptionsHandler(); // Oprional
+        options.ExceptionsHandler = new ExceptionsHandler(); // Optional
    });
    ```
 
