@@ -1,4 +1,4 @@
-namespace TgBotLib.Core;
+namespace TgBotLib.Coreю.Models;
 
 internal class BotSettings
 {
