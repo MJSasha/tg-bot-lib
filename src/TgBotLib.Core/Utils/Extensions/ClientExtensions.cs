@@ -21,7 +21,7 @@ public static class ClientExtensions
         CancellationToken cancellationToken = default)
     {
         return botClient.SendTextMessageAsync(chatId,
-            text,
+            text.Replace(".", @"\."),
             parseMode: ParseMode.MarkdownV2,
             messageThreadId: messageThreadId,
             entities: entities,
