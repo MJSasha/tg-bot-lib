@@ -7,6 +7,11 @@ namespace TgBotLib.Core;
 
 public static class ServicesProvider
 {
+    public static IServiceCollection AddBotLibCore(this IServiceCollection services, string botToken)
+    {
+        return AddBotLibCore(services, options => options.BotToken = botToken);
+    }
+
     public static IServiceCollection AddBotLibCore(this IServiceCollection services, Action<Options>? optionsBuilder)
     {
         var options = new Options();
