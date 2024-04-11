@@ -8,6 +8,10 @@ internal class ExceptionsHandler : IExceptionsHandler
     public Task Handle(Exception ex, ITelegramBotClient botClient, Update update)
     {
         return Task.CompletedTask;
-        ;
+    }
+
+    public Task Handle(Exception exception, ITelegramBotClient botClient)
+    {
+        return Task.CompletedTask;
     }
 }

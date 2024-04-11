@@ -99,7 +99,6 @@ internal class TelegramBotService : IHostedService
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // TODO: Handle polling error logic here
-        return Task.CompletedTask;
+        return _exceptionsHandler.Handle(exception, botClient);
     }
 }

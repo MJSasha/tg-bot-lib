@@ -148,5 +148,10 @@ public class ExceptionsHandler : IExceptionsHandler
     {
         return botClient.SendTextMessageAsync(update.GetChatId(), ex.ToString());
     }
+
+    public Task Handle(Exception exception, ITelegramBotClient botClient)
+    {
+        return Task.CompletedTask;
+    }
 }
 ```
