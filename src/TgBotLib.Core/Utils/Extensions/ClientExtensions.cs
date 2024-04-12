@@ -40,15 +40,11 @@ public static class ClientExtensions
         char[] specialCharacters =
         [
             '\\',
-            '_',
-            '*',
             '[',
             ']',
             '(',
             ')',
             '~',
-            '`',
-            '>',
             '<',
             '&',
             '#',
