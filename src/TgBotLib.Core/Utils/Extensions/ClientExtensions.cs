@@ -7,7 +7,7 @@ namespace TgBotLib.Core;
 
 public static class ClientExtensions
 {
-    public static char[] ChartsForEscape = ['[', ']', '(', ')', '~', '>', '<', '&', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+    public static char[] ChartsForEscape { get; set; } = ['[', ']', '(', ')', '~', '>', '<', '&', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
 
     public static Task SendMdTextMessage(this ITelegramBotClient botClient,
         ChatId chatId,
