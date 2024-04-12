@@ -6,11 +6,11 @@ internal class UsersActionsService : IUsersActionsService
 {
     private readonly Dictionary<long, UserActionStepInfo?> _userActionStepInfos = [];
 
-    public void HandleUser(long chatId, string actionName)
+    public void HandleUser(long chatId, string actionName, object payload = null)
     {
         lock (_userActionStepInfos)
         {
-            _userActionStepInfos.Add(chatId, new UserActionStepInfo(actionName));
+            _userActionStepInfos.Add(chatId, new UserActionStepInfo(actionName, payload));
         }
     }
 

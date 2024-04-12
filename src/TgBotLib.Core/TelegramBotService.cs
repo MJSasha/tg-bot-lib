@@ -13,13 +13,15 @@ internal class TelegramBotService : IHostedService
 {
     private readonly BotControllerFactory _botControllerFactory;
     private readonly IUsersActionsService _usersActionsService;
+    private readonly IExceptionsHandler _exceptionsHandler;
     private readonly TelegramBotClient _botClient;
 
-    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, IUsersActionsService usersActionsService)
+    public TelegramBotService(BotControllerFactory botControllerFactory, IUsersActionsService usersActionsService, IExceptionsHandler exceptionsHandler, TelegramBotClient botClient)
     {
         _botControllerFactory = botControllerFactory;
         _usersActionsService = usersActionsService;
-        _botClient = new TelegramBotClient(botSettings.BotToken);
+        _exceptionsHandler = exceptionsHandler;
+        _botClient = botClient;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -50,27 +52,34 @@ internal class TelegramBotService : IHostedService
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        var botExecutionContext = new BotExecutionContext().SetBotClient(botClient).SetUpdate(update);
-        var controllers = _botControllerFactory.GetControllers(botExecutionContext);
-
-        var userActionInfo = _usersActionsService.GetUserActionStepInfo(update.GetChatId());
-
-        if (userActionInfo != null)
+        try
         {
-            var actionsCompleted = await UpdateHandlingHelper.HandleUserAction(controllers, userActionInfo);
-            if (actionsCompleted) _usersActionsService.RemoveUser(update.GetChatId());
-            else _usersActionsService.IncrementStep(update.GetChatId());
-            return;
+            var botExecutionContext = new BotExecutionContext().SetBotClient(botClient).SetUpdate(update);
+            var controllers = _botControllerFactory.GetControllers(botExecutionContext);
+
+            var userActionInfo = _usersActionsService.GetUserActionStepInfo(update.GetChatId());
+
+            if (userActionInfo != null)
+            {
+                var actionsCompleted = await UpdateHandlingHelper.HandleUserAction(controllers, userActionInfo);
+                if (actionsCompleted) _usersActionsService.RemoveUser(update.GetChatId());
+                else _usersActionsService.IncrementStep(update.GetChatId());
+                return;
+            }
+
+            await (update.Type switch
+            {
+                UpdateType.Message => HandleMessage(update, controllers),
+                UpdateType.CallbackQuery => HandleCallbackQuery(update, controllers),
+                UpdateType.InlineQuery => UpdateHandlingHelper.HandleUnknown<InlineQueryAttribute>(controllers),
+                UpdateType.ChosenInlineResult => UpdateHandlingHelper.HandleUnknown<ChosenInlineResultAttribute>(controllers),
+                _ => UpdateHandlingHelper.HandleUnknown<UnknownUpdateAttribute>(controllers)
+            });
         }
-
-        await (update.Type switch
+        catch (Exception ex)
         {
-            UpdateType.Message => HandleMessage(update, controllers),
-            UpdateType.CallbackQuery => HandleCallbackQuery(update, controllers),
-            UpdateType.InlineQuery => UpdateHandlingHelper.HandleUnknown<InlineQueryAttribute>(controllers),
-            UpdateType.ChosenInlineResult => UpdateHandlingHelper.HandleUnknown<ChosenInlineResultAttribute>(controllers),
-            _ => UpdateHandlingHelper.HandleUnknown<UnknownUpdateAttribute>(controllers)
-        });
+            await _exceptionsHandler.Handle(ex, botClient, update);
+        }
     }
 
     private Task HandleCallbackQuery(Update update, IEnumerable<BotController> controllers)
@@ -89,7 +98,6 @@ internal class TelegramBotService : IHostedService
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // TODO: Handle polling error logic here
-        return Task.CompletedTask;
+        return _exceptionsHandler.Handle(exception, botClient);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
 using TgBotLib.Core.Base;
 using TgBotLib.Core.Services;
 
@@ -8,17 +9,36 @@ public static class ServicesProvider
 {
     public static IServiceCollection AddBotLibCore(this IServiceCollection services, string botToken)
     {
-        var botSettings = new BotSettings { BotToken = botToken };
+        return AddBotLibCore(services, options => options.BotToken = botToken);
+    }
+
+    public static IServiceCollection AddBotLibCore(this IServiceCollection services, Action<Options>? optionsBuilder)
+    {
+        var options = new Options();
+        optionsBuilder?.Invoke(options);
+
+        if (string.IsNullOrWhiteSpace(options.BotToken)) throw new ArgumentException("Invalid bot token", nameof(options.BotToken));
+
+        var telegramBotClient = new TelegramBotClient(options.BotToken);
 
         services
             .AddSingleton(sp => new BotControllerFactory(sp))
-            .AddSingleton(botSettings)
+            .AddSingleton(telegramBotClient)
             .AddSingleton<IUsersActionsService, UsersActionsService>()
             .AddTransient<IInlineButtonsGenerationService, InlineButtonsGenerationService>()
             .AddTransient<IKeyboardButtonsGenerationService, KeyboardButtonsGenerationService>()
             .AddHostedService<TelegramBotService>()
             .AddControllers()
             ;
+
+        if (options.ExceptionsHandler != null)
+        {
+            services.AddSingleton(options.ExceptionsHandler);
+        }
+        else
+        {
+            services.AddSingleton<IExceptionsHandler>(new ExceptionsHandler());
+        }
 
         return services;
     }

@@ -12,10 +12,28 @@ internal class InlineButtonsGenerationService : IInlineButtonsGenerationService
     }
 
     public void SetInlineButtons(params string[] markup) => SetInlineButtons([markup]);
-    public void SetInlineButtons(params string[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(text => InlineKeyboardButton.WithCallbackData(text, text)).ToList());
+
+    public void SetInlineButtons(params string[][] markup)
+    {
+        foreach (var buttons in markup)
+        {
+            foreach (var text in buttons) ValidationHelper.ValidateCallback(text);
+        }
+
+        AddButtons(markup, (lineMarkup) => lineMarkup.Select(text => InlineKeyboardButton.WithCallbackData(text, text)).ToList());
+    }
 
     public void SetInlineButtons(params (string name, string callback)[] markup) => SetInlineButtons([markup]);
-    public void SetInlineButtons(params (string name, string callback)[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithCallbackData(b.name, b.callback)).ToList());
+
+    public void SetInlineButtons(params (string name, string callback)[][] markup)
+    {
+        foreach (var buttons in markup)
+        {
+            foreach (var button in buttons) ValidationHelper.ValidateCallback(button.callback);
+        }
+
+        AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithCallbackData(b.name, b.callback)).ToList());
+    }
 
     public void SetInlineUrlButtons(params (string name, string url)[] markup) => SetInlineUrlButtons([markup]);
     public void SetInlineUrlButtons(params (string name, string url)[][] markup) => AddButtons(markup, (lineMarkup) => lineMarkup.Select(b => InlineKeyboardButton.WithUrl(b.name, b.url)).ToList());
