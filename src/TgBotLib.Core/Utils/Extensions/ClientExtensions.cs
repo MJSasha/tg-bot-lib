@@ -37,7 +37,30 @@ public static class ClientExtensions
 
     public static string EscapeMarkdownSpecialCharacters(this string input)
     {
-        char[] specialCharacters = ['\\', '*', '_', '[', ']', '(', ')', '!', '#', '.'];
+        char[] specialCharacters =
+        [
+            '\\',
+            '_',
+            '*',
+            '[',
+            ']',
+            '(',
+            ')',
+            '~',
+            '`',
+            '>',
+            '<',
+            '&',
+            '#',
+            '+',
+            '-',
+            '=',
+            '|',
+            '{',
+            '}',
+            '.',
+            '!'
+        ];
 
         foreach (var specialChar in specialCharacters)
         {
