@@ -21,7 +21,7 @@ public static class ClientExtensions
         CancellationToken cancellationToken = default)
     {
         return botClient.SendTextMessageAsync(chatId,
-            text.Replace(".", @"\."),
+            text.EscapeMarkdownSpecialCharacters(),
             parseMode: ParseMode.MarkdownV2,
             messageThreadId: messageThreadId,
             entities: entities,
@@ -33,5 +33,17 @@ public static class ClientExtensions
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
         );
+    }
+
+    public static string EscapeMarkdownSpecialCharacters(this string input)
+    {
+        char[] specialCharacters = { '\\', '*', '_', '[', ']', '(', ')', '!', '#' };
+
+        foreach (var specialChar in specialCharacters)
+        {
+            input = input.Replace(specialChar.ToString(), "\\" + specialChar);
+        }
+
+        return input;
     }
 }
