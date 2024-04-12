@@ -6,7 +6,6 @@ using Telegram.Bot.Types.Enums;
 using TgBotLib.Core.Base;
 using TgBotLib.Core.Models;
 using TgBotLib.Core.Services;
-using TgBotLib.Coreю.Models;
 
 namespace TgBotLib.Core;
 
@@ -17,12 +16,12 @@ internal class TelegramBotService : IHostedService
     private readonly IExceptionsHandler _exceptionsHandler;
     private readonly TelegramBotClient _botClient;
 
-    public TelegramBotService(BotSettings botSettings, BotControllerFactory botControllerFactory, IUsersActionsService usersActionsService, IExceptionsHandler exceptionsHandler)
+    public TelegramBotService(BotControllerFactory botControllerFactory, IUsersActionsService usersActionsService, IExceptionsHandler exceptionsHandler, TelegramBotClient botClient)
     {
         _botControllerFactory = botControllerFactory;
         _usersActionsService = usersActionsService;
         _exceptionsHandler = exceptionsHandler;
-        _botClient = new TelegramBotClient(botSettings.BotToken);
+        _botClient = botClient;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
