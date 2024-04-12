@@ -7,6 +7,8 @@ namespace TgBotLib.Core;
 
 public static class ClientExtensions
 {
+    public static char[] ChartsForEscape = ['[', ']', '(', ')', '~', '>', '<', '&', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+
     public static Task SendMdTextMessage(this ITelegramBotClient botClient,
         ChatId chatId,
         string text,
@@ -37,28 +39,7 @@ public static class ClientExtensions
 
     public static string EscapeMarkdownSpecialCharacters(this string input)
     {
-        char[] specialCharacters =
-        [
-            '\\',
-            '[',
-            ']',
-            '(',
-            ')',
-            '~',
-            '<',
-            '&',
-            '#',
-            '+',
-            '-',
-            '=',
-            '|',
-            '{',
-            '}',
-            '.',
-            '!'
-        ];
-
-        foreach (var specialChar in specialCharacters)
+        foreach (var specialChar in ChartsForEscape)
         {
             input = input.Replace(specialChar.ToString(), "\\" + specialChar);
         }
