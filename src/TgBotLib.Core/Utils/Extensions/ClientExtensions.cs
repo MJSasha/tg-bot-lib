@@ -7,7 +7,10 @@ namespace TgBotLib.Core;
 
 public static class ClientExtensions
 {
-    public static Task SendMdTextMessage(this ITelegramBotClient botClient,
+    public static char[] ChartsForEscape { get; set; } = ['[', ']', '(', ')', '~', '>', '<', '&', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+
+    public static Task SendMdTextMessage(
+        this ITelegramBotClient botClient,
         ChatId chatId,
         string text,
         int? messageThreadId = default,
@@ -21,7 +24,7 @@ public static class ClientExtensions
         CancellationToken cancellationToken = default)
     {
         return botClient.SendTextMessageAsync(chatId,
-            text,
+            text.EscapeMarkdownSpecialCharacters(),
             parseMode: ParseMode.MarkdownV2,
             messageThreadId: messageThreadId,
             entities: entities,
@@ -33,5 +36,39 @@ public static class ClientExtensions
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
         );
+    }
+
+    public static Task<Message> EditMdMessageText(
+        this ITelegramBotClient botClient,
+        ChatId chatId,
+        int messageId,
+        string text,
+        ParseMode? parseMode = default,
+        IEnumerable<MessageEntity>? entities = default,
+        bool? disableWebPagePreview = default,
+        InlineKeyboardMarkup? replyMarkup = default,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return botClient.EditMessageTextAsync(
+            chatId,
+            messageId,
+            text.EscapeMarkdownSpecialCharacters(),
+            parseMode: ParseMode.MarkdownV2,
+            entities: entities,
+            disableWebPagePreview: disableWebPagePreview,
+            replyMarkup: replyMarkup,
+            cancellationToken: cancellationToken
+        );
+    }
+
+    public static string EscapeMarkdownSpecialCharacters(this string input)
+    {
+        foreach (var specialChar in ChartsForEscape)
+        {
+            input = input.Replace(specialChar.ToString(), "\\" + specialChar);
+        }
+
+        return input;
     }
 }

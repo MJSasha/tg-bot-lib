@@ -11,15 +11,20 @@
     dotnet add package TgBotLib.Core
     ```
 2. В Program.cs добавить следующую строку:
-    ```csharp
-    builder.Services.AddBotLibCore("<YOUR_BOT_TOKEN>");
-    ```
+   ```csharp
+   builder.Services.AddBotLibCore(options =>
+   {
+        options.BotToken = "2065215367:AAEKo4QKE7BmbH7JmUdL57YTPjj7YGeemzA";
+        options.ExceptionsHandler = new ExceptionsHandler(); // Optional
+   });
+   ```
 
 ## Пример
 
-Далее, по аналогии, можно добавить контроллеры
+> [!CAUTION]
+> Методы контроллера, помеченные атрибутами из библиотеки, не должны иметь параметров и должны возвращать `Task`
 
-Пример стандартного контроллера:
+### Пример стандартного контроллера:
 
 ```csharp
 public class TestController : BotController
@@ -98,7 +103,7 @@ public class TestController : BotController
 }
 ```
 
-Пример контроллера с обработкой последовательности:
+### Пример контроллера с обработкой последовательности:
 
 ```csharp
 public class SecondTestController : BotController
@@ -133,6 +138,23 @@ public class SecondTestController : BotController
     public async Task ThirdStep()
     {
         await Client.SendTextMessageAsync(BotContext.Update.GetChatId(), $"Third step {BotContext.Update.GetMessageText()}");
+    }
+}
+```
+
+### Пример обработчика исключений
+
+```csharp
+public class ExceptionsHandler : IExceptionsHandler
+{
+    public Task Handle(Exception ex, ITelegramBotClient botClient, Update update)
+    {
+        return botClient.SendTextMessageAsync(update.GetChatId(), ex.ToString());
+    }
+
+    public Task Handle(Exception exception, ITelegramBotClient botClient)
+    {
+        return Task.CompletedTask;
     }
 }
 ```
