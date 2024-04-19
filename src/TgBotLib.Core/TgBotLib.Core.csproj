@@ -5,10 +5,23 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Version>1.2.6</Version>
+        <Version>1.2.7</Version>
+        <PackageIcon>bot.svg</PackageIcon>
+        <Title>TgBotLib.Core</Title>
+        <Authors>MJSasha</Authors>
+        <Description>Create ASP Web API like bots</Description>
+        <Copyright>MIT</Copyright>
+        <PackageProjectUrl>https://github.com/MJSasha/tg-bot-lib</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/MJSasha/tg-bot-lib/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/MJSasha/tg-bot-lib</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="..\..\img\bot.svg">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Link>bot.svg</Link>
+        </None>
         <None Include="..\..\README.md">
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
