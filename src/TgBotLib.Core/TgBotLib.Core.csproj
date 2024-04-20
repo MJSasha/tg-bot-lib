@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Version>1.2.7</Version>
-        <PackageIcon>bot.svg</PackageIcon>
+        <PackageIcon>bot.png</PackageIcon>
         <Title>TgBotLib.Core</Title>
         <Authors>MJSasha</Authors>
         <Description>Create ASP Web API like bots</Description>
@@ -17,10 +17,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\img\bot.svg">
+        <None Include="..\..\img\bot.png">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
-            <Link>bot.svg</Link>
+            <Link>bot.png</Link>
         </None>
         <None Include="..\..\README.md">
             <Pack>True</Pack>
