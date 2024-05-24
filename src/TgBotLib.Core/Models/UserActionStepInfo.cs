@@ -4,13 +4,13 @@ public class UserActionStepInfo
 {
     public int Step { get; private set; }
     public string ActionName { get; private set; }
-    private object Model { get; set; }
+    private object _payload;
 
-    public UserActionStepInfo(string actionName, object model)
+    public UserActionStepInfo(string actionName, object payload)
     {
         Step = 0;
         ActionName = actionName;
-        Model = model;
+        _payload = payload;
     }
 
     public UserActionStepInfo IncrementStep()
@@ -21,6 +21,11 @@ public class UserActionStepInfo
 
     public T GetPayload<T>()
     {
-        return (T)Model;
+        return (T)_payload;
+    }
+
+    public void UpdatePayload(object payload)
+    {
+        _payload = payload;
     }
 }
