@@ -31,6 +31,15 @@ internal class UsersActionsService : IUsersActionsService
         }
     }
 
+    public void DecrementStep(long chatId)
+    {
+        lock (_userActionStepInfos)
+        {
+            var info = _userActionStepInfos.GetValueOrDefault(chatId);
+            info.DecrementStep();
+        }
+    }
+
     public void RemoveUser(long chatId)
     {
         lock (_userActionStepInfos)
