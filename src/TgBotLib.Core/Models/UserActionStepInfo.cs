@@ -18,6 +18,12 @@ public class UserActionStepInfo
         Step++;
         return this;
     }
+    
+    public UserActionStepInfo DecrementStep()
+    {
+        Step -= 2;
+        return this;
+    }
 
     public T GetPayload<T>()
     {
